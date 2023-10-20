@@ -4,7 +4,7 @@ import { Logo } from './logo'
 
 export const Footer = () => {
 	return (
-		<div className='flex items-center w-full p-6 bg-background z-50 dark:bg-[#0b0b0b]'>
+		<div className='flex items-center w-full p-6 bg-background z-50 dark:bg-[#000000]'>
 			<Logo />
 			<div className='md:ml-auto w-full justify-between md:justify-end flex items-center gap-x-2'>
 				<Button variant='ghost' size='sm'>
