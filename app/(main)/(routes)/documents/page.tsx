@@ -22,9 +22,9 @@ const DocumentsPage = () => {
 		)
 
 		toast.promise(promise, {
-			loading: 'Creating a new note...',
-			success: 'New note created!',
-			error: 'Failed to create a new note.',
+			loading: 'Creating a new quote...',
+			success: 'New quote created!',
+			error: 'Failed to create a new quote.',
 		})
 	}
 
@@ -49,7 +49,7 @@ const DocumentsPage = () => {
 			</h2>
 			<Button onClick={onCreate}>
 				<PlusCircle className='h-6 w-6 mr-2' />
-				Create a note
+				Create a quote
 			</Button>
 		</div>
 	)

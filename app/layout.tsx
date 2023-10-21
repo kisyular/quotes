@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
 	title: 'Quotes',
-	description: 'A personal note taker app build with Next JS',
+	description: 'A personal quote taker app build with Next JS',
 	icons: {
 		icon: [
 			{

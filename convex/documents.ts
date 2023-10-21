@@ -3,6 +3,20 @@ import { v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 import { Doc, Id } from './_generated/dataModel'
 
+export const get = query({
+	handler: async (ctx) => {
+		// Get the identity of the current user
+		const identity = await ctx.auth.getUserIdentity()
+
+		// If the user is not authenticated, throw an error
+		if (!identity) {
+			throw new Error('Not authenticated')
+		}
+
+		const documents = await ctx.db.query('documents').collect()
+		return documents
+	},
+})
 // Define a mutation for creating a new document
 export const create = mutation({
 	// Define the arguments for the mutation
