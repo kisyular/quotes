@@ -76,3 +76,67 @@ export const create = mutation({
 		return document
 	},
 })
+
+// Define a mutation for archiving a document
+export const archive = mutation({
+	// Define the arguments for the mutation
+	args: { id: v.id('documents') }, // The ID of the document to be archived
+	// Define the handler for the mutation
+	handler: async (ctx, args) => {
+		// Get the identity of the current user
+		const identity = await ctx.auth.getUserIdentity()
+
+		// If the user is not authenticated, throw an error
+		if (!identity) {
+			throw new Error('Not authenticated')
+		}
+
+		// Get the ID of the current user
+		const userId = identity.subject
+
+		// Get the existing document from the database
+		const existingDocument = await ctx.db.get(args.id)
+
+		// If the document does not exist, throw an error
+		if (!existingDocument) {
+			throw new Error('Not found')
+		}
+
+		// If the user is not the owner of the document, throw an error
+		if (existingDocument.userId !== userId) {
+			throw new Error('Unauthorized')
+		}
+
+		// Define a recursive function to archive a document and its children
+		const recursiveArchive = async (documentId: Id<'documents'>) => {
+			// Get the children of the document
+			const children = await ctx.db
+				.query('documents')
+				.withIndex('by_user_parent', (q) =>
+					q.eq('userId', userId).eq('parentDocument', documentId)
+				)
+				.collect()
+
+			// For each child, archive it and its children
+			for (const child of children) {
+				await ctx.db.patch(child._id, {
+					isArchived: true, // Set the isArchived field to true
+				})
+
+				// Recursively archive the child and its children
+				await recursiveArchive(child._id)
+			}
+		}
+
+		// Archive the document
+		const document = await ctx.db.patch(args.id, {
+			isArchived: true, // Set the isArchived field to true
+		})
+
+		// Recursively archive the document and its children
+		recursiveArchive(args.id)
+
+		// Return the archived document
+		return document
+	},
+})

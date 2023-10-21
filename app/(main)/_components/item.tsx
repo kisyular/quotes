@@ -50,6 +50,7 @@ const Item = ({
 }: ItemProps) => {
 	const { user } = useUser()
 	const create = useMutation(api.documents.create)
+	const archive = useMutation(api.documents.archive)
 
 	const handleExpand = (
 		event: React.MouseEvent<HTMLDivElement, MouseEvent>
@@ -72,9 +73,21 @@ const Item = ({
 		})
 
 		toast.promise(promise, {
-			loading: 'Creating a new note...',
-			success: 'New note created!',
-			error: 'Failed to create a new note.',
+			loading: 'Creating a new quote...',
+			success: 'New quote created!',
+			error: 'Failed to create a new quote.',
+		})
+	}
+
+	const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+		event.stopPropagation()
+		if (!id) return
+
+		const promise = archive({ id })
+		toast.promise(promise, {
+			loading: 'Moving to trash...',
+			success: 'Quote moved to trash!',
+			error: 'Failed to archive quote.',
 		})
 	}
 
@@ -135,13 +148,16 @@ const Item = ({
 							side='right'
 							forceMount
 						>
-							<DropdownMenuItem onClick={() => {}}>
+							<DropdownMenuItem
+								className='text-red-500'
+								onClick={onArchive}
+							>
 								<Trash className='h-4 w-4 mr-2' />
 								Delete
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<div className='text-xs text-muted-foreground p-2'>
-								Last edited by: {user?.fullName}
+								Last edited by: {user?.firstName}
 							</div>
 						</DropdownMenuContent>
 					</DropdownMenu>
