@@ -149,7 +149,7 @@ const Item = ({
 							forceMount
 						>
 							<DropdownMenuItem
-								className='text-red-500'
+								className='text-red-600'
 								onClick={onArchive}
 							>
 								<Trash className='h-4 w-4 mr-2' />

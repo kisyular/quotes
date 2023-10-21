@@ -24,6 +24,7 @@ import { api } from '@/convex/_generated/api'
 import UserItem from './user-item'
 import Item from './item'
 import DocumentList from './document-list'
+import { TrashBox } from './trash-box'
 
 const Navigation = () => {
 	const pathname = usePathname()
@@ -199,8 +200,7 @@ const Navigation = () => {
 							className='p-0 w-72'
 							side={isMobile ? 'bottom' : 'right'}
 						>
-							TrashBox
-							{/* <TrashBox /> */}
+							<TrashBox />
 						</PopoverContent>
 					</Popover>
 				</div>
