@@ -285,3 +285,33 @@ export const remove = mutation({
 		return document
 	},
 })
+
+// Define a query for getting search results
+export const getSearch = query({
+	// Define the handler for the query
+	handler: async (ctx) => {
+		// Get the user identity
+		const identity = await ctx.auth.getUserIdentity()
+
+		// If the user is not authenticated, throw an error
+		if (!identity) {
+			throw new Error('Not authenticated')
+		}
+
+		// Get the user ID from the identity
+		const userId = identity.subject
+
+		// Query the documents in the database
+		// Filter by user ID and non-archived status
+		// Order the results in descending order
+		const documents = await ctx.db
+			.query('documents')
+			.withIndex('by_user', (q) => q.eq('userId', userId))
+			.filter((q) => q.eq(q.field('isArchived'), false))
+			.order('desc')
+			.collect()
+
+		// Return the search results
+		return documents
+	},
+})

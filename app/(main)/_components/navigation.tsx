@@ -14,6 +14,7 @@ import {
 	PopoverContent,
 } from '@/components/ui/popover'
 import { toast } from 'sonner'
+import { useSearch } from '@/hooks/use-search'
 
 import { usePathname, useRouter } from 'next/navigation'
 import { ElementRef, useEffect, useRef, useState } from 'react'
@@ -29,6 +30,7 @@ import { TrashBox } from './trash-box'
 const Navigation = () => {
 	const pathname = usePathname()
 	const isMobile = useMediaQuery('(max-width: 768px)')
+	const search = useSearch()
 
 	const isResizingRef = useRef(false)
 	const sidebarRef = useRef<ElementRef<'aside'>>(null)
@@ -172,7 +174,7 @@ const Navigation = () => {
 				<div>
 					<UserItem />
 					<Item
-						onClick={() => {}}
+						onClick={search.onOpen}
 						label='Search'
 						isSearch
 						icon={Search}
