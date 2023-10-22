@@ -315,3 +315,82 @@ export const getSearch = query({
 		return documents
 	},
 })
+
+export const getById = query({
+	args: { documentId: v.id('documents') },
+	handler: async (ctx, args) => {
+		const identity = await ctx.auth.getUserIdentity()
+
+		const document = await ctx.db.get(args.documentId)
+
+		if (!document) {
+			throw new Error('Not found')
+		}
+
+		if (document.isPublished && !document.isArchived) {
+			return document
+		}
+
+		if (!identity) {
+			throw new Error('Not authenticated')
+		}
+
+		const userId = identity.subject
+
+		if (document.userId !== userId) {
+			throw new Error('Unauthorized')
+		}
+
+		return document
+	},
+})
+
+// Define the update mutation
+export const update = mutation({
+	// Define the arguments for the mutation
+	args: {
+		id: v.id('documents'), // Document ID
+		title: v.optional(v.string()), // Optional title
+		content: v.optional(v.string()), // Optional content
+		coverImage: v.optional(v.string()), // Optional cover image
+		icon: v.optional(v.string()), // Optional icon
+		isPublished: v.optional(v.boolean()), // Optional published status
+	},
+	// Define the handler for the mutation
+	handler: async (ctx, args) => {
+		// Get the user identity
+		const identity = await ctx.auth.getUserIdentity()
+
+		// If the user is not authenticated, throw an error
+		if (!identity) {
+			throw new Error('Unauthenticated')
+		}
+
+		// Get the user ID from the identity
+		const userId = identity.subject
+
+		// Destructure the arguments
+		const { id, ...rest } = args
+
+		// Get the existing document from the database
+		const existingDocument = await ctx.db.get(args.id)
+
+		// If the document does not exist, throw an error
+		if (!existingDocument) {
+			throw new Error('Not found')
+		}
+
+		// If the user ID does not match the document's user ID, throw an error
+		if (existingDocument.userId !== userId) {
+			throw new Error('Unauthorized')
+		}
+
+		// Update the document in the database
+		const document = await ctx.db.patch(args.id, {
+			...rest, // Apply the rest of the arguments to the document
+		})
+
+		// Return the updated document
+		return document
+	},
+})
