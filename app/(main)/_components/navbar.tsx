@@ -7,6 +7,7 @@ import { api } from '@/convex/_generated/api'
 import { Id } from '@/convex/_generated/dataModel'
 import { MenuIcon } from 'lucide-react'
 import { Title } from './title'
+import { Banner } from './banner'
 
 interface NavbarProps {
 	isCollapsed: boolean
@@ -47,7 +48,7 @@ const Navbar = ({ isCollapsed, onResetWidth }: NavbarProps) => {
 					<div className='flex items-center gap-x-2'>Hello</div>
 				</div>
 			</nav>
-			{document.isArchived && <p>{document._id} </p>}
+			{document.isArchived && <Banner documentId={document._id} />}
 		</>
 	)
 }
