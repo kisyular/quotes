@@ -33,8 +33,8 @@ export const Menu = ({ documentId }: MenuProps) => {
 
 		toast.promise(promise, {
 			loading: 'Moving to trash...',
-			success: 'Note moved to trash!',
-			error: 'Failed to archive note.',
+			success: 'Quote moved to trash!',
+			error: 'Failed to archive quote.',
 		})
 
 		router.push('/documents')

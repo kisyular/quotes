@@ -1,4 +1,5 @@
-import { cn } from '@/lib/utils'
+'use client'
+
 import {
 	ChevronsLeft,
 	MenuIcon,
@@ -8,20 +9,21 @@ import {
 	Settings,
 	Trash,
 } from 'lucide-react'
+import { useParams, usePathname, useRouter } from 'next/navigation'
+import { ElementRef, useEffect, useRef, useState } from 'react'
+import { useMediaQuery } from 'usehooks-ts'
+import { useMutation } from 'convex/react'
+import { toast } from 'sonner'
+
+import { cn } from '@/lib/utils'
+import { api } from '@/convex/_generated/api'
 import {
 	Popover,
 	PopoverTrigger,
 	PopoverContent,
 } from '@/components/ui/popover'
-import { toast } from 'sonner'
 import { useSearch } from '@/hooks/use-search'
 import { useSettings } from '@/hooks/use-settings'
-
-import { usePathname, useParams } from 'next/navigation'
-import { ElementRef, useEffect, useRef, useState } from 'react'
-import { useMediaQuery } from 'usehooks-ts'
-import { useMutation } from 'convex/react'
-import { api } from '@/convex/_generated/api'
 
 import UserItem from './user-item'
 import Item from './item'
@@ -30,18 +32,19 @@ import { TrashBox } from './trash-box'
 import Navbar from './navbar'
 
 const Navigation = () => {
+	const router = useRouter()
+	const settings = useSettings()
+	const search = useSearch()
+	const params = useParams()
 	const pathname = usePathname()
 	const isMobile = useMediaQuery('(max-width: 768px)')
-	const search = useSearch()
-	const settings = useSettings()
+	const create = useMutation(api.documents.create)
 
 	const isResizingRef = useRef(false)
 	const sidebarRef = useRef<ElementRef<'aside'>>(null)
 	const navbarRef = useRef<ElementRef<'div'>>(null)
 	const [isResetting, setIsResetting] = useState(false)
 	const [isCollapsed, setIsCollapsed] = useState(isMobile)
-	const create = useMutation(api.documents.create)
-	const params = useParams()
 
 	useEffect(() => {
 		if (isMobile) {
@@ -49,7 +52,6 @@ const Navigation = () => {
 		} else {
 			resetWidth()
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isMobile])
 
 	useEffect(() => {
@@ -58,40 +60,27 @@ const Navigation = () => {
 		}
 	}, [pathname, isMobile])
 
-	// This function handles the event when the mouse button is pressed down
 	const handleMouseDown = (
 		event: React.MouseEvent<HTMLDivElement, MouseEvent>
 	) => {
-		// Prevent the default behavior of the event and stop it from propagating up the DOM tree
 		event.preventDefault()
 		event.stopPropagation()
 
-		// Set the isResizingRef to true indicating that resizing has started
 		isResizingRef.current = true
-		// Add event listeners for mousemove and mouseup events
 		document.addEventListener('mousemove', handleMouseMove)
 		document.addEventListener('mouseup', handleMouseUp)
 	}
 
-	// This function handles the event when the mouse is moved
 	const handleMouseMove = (event: MouseEvent) => {
-		// If resizing is not in progress, exit the function
 		if (!isResizingRef.current) return
-
-		// Get the new width based on the mouse's x-coordinate
 		let newWidth = event.clientX
 
-		// Set the minimum and maximum width for the sidebar
 		if (newWidth < 240) newWidth = 240
 		if (newWidth > 480) newWidth = 480
 
-		// If the sidebar and navbar references exist, adjust their styles
 		if (sidebarRef.current && navbarRef.current) {
-			// Set the width of the sidebar to the new width
 			sidebarRef.current.style.width = `${newWidth}px`
-			// Set the left property of the navbar to the new width
 			navbarRef.current.style.setProperty('left', `${newWidth}px`)
-			// Set the width of the navbar to the remaining width
 			navbarRef.current.style.setProperty(
 				'width',
 				`calc(100% - ${newWidth}px)`
@@ -106,25 +95,19 @@ const Navigation = () => {
 	}
 
 	const resetWidth = () => {
-		// Check if the sidebar and navbar references exist
 		if (sidebarRef.current && navbarRef.current) {
-			// Set the isCollapsed state to false and the isResetting state to true
 			setIsCollapsed(false)
 			setIsResetting(true)
 
-			// Adjust the width of the sidebar based on whether the device is mobile or not
 			sidebarRef.current.style.width = isMobile ? '100%' : '240px'
-			// Adjust the width of the navbar based on whether the device is mobile or not
 			navbarRef.current.style.setProperty(
 				'width',
 				isMobile ? '0' : 'calc(100% - 240px)'
 			)
-			// Adjust the left property of the navbar based on whether the device is mobile or not
 			navbarRef.current.style.setProperty(
 				'left',
 				isMobile ? '100%' : '240px'
 			)
-			// After 300 milliseconds, set the isResetting state back to false
 			setTimeout(() => setIsResetting(false), 300)
 		}
 	}
@@ -143,8 +126,7 @@ const Navigation = () => {
 
 	const handleCreate = () => {
 		const promise = create({ title: 'Untitled' }).then((documentId) =>
-			// router.push(`/documents/${documentId}`)
-			console.log('Created')
+			router.push(`/documents/${documentId}`)
 		)
 
 		toast.promise(promise, {
@@ -159,14 +141,14 @@ const Navigation = () => {
 			<aside
 				ref={sidebarRef}
 				className={cn(
-					'group/sidebar h-full bg-[#eaeaea] dark:bg-[#0b0b0b] overflow-y-auto relative flex w-60 flex-col z-[99999]',
+					'group/sidebar h-full bg-secondary overflow-y-auto relative flex w-60 flex-col z-[99999] dark:bg-[#0b0b0b]',
 					isResetting && 'transition-all ease-in-out duration-300',
 					isMobile && 'w-0'
 				)}
 			>
 				<div
-					role='button'
 					onClick={collapse}
+					role='button'
 					className={cn(
 						'h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition',
 						isMobile && 'opacity-100'
@@ -177,15 +159,15 @@ const Navigation = () => {
 				<div>
 					<UserItem />
 					<Item
-						onClick={search.onOpen}
 						label='Search'
-						isSearch
 						icon={Search}
+						isSearch
+						onClick={search.onOpen}
 					/>
 					<Item
-						onClick={settings.onOpen}
 						label='Settings'
 						icon={Settings}
+						onClick={settings.onOpen}
 					/>
 					<Item
 						onClick={handleCreate}
@@ -200,7 +182,6 @@ const Navigation = () => {
 						icon={Plus}
 						label='Add a page'
 					/>
-
 					<Popover>
 						<PopoverTrigger className='w-full mt-4'>
 							<Item label='Trash' icon={Trash} />
@@ -247,4 +228,5 @@ const Navigation = () => {
 		</>
 	)
 }
+
 export default Navigation

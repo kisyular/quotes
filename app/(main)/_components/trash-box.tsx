@@ -37,9 +37,9 @@ export const TrashBox = () => {
 		const promise = restore({ id: documentId })
 
 		toast.promise(promise, {
-			loading: 'Restoring note...',
-			success: 'Note restored!',
-			error: ' Failed to restore note.',
+			loading: 'Restoring quote...',
+			success: 'Quote restored!',
+			error: ' Failed to restore quote.',
 		})
 	}
 
@@ -47,9 +47,9 @@ export const TrashBox = () => {
 		const promise = remove({ id: documentId })
 
 		toast.promise(promise, {
-			loading: 'Deleting note...',
-			success: 'Note deleted!',
-			error: ' Failed to delete note.',
+			loading: 'Deleting quote...',
+			success: 'Quote deleted!',
+			error: ' Failed to delete quote.',
 		})
 
 		if (params.documentId === documentId) {
@@ -94,7 +94,7 @@ export const TrashBox = () => {
 								role='button'
 								className='rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600'
 							>
-								<Undo className='h-4 w-4 text-muted-foreground text-green-400' />
+								<Undo className='h-4 w-4  text-green-400' />
 							</div>
 							<ConfirmModal
 								onConfirm={() => onRemove(document._id)}
@@ -103,7 +103,7 @@ export const TrashBox = () => {
 									role='button'
 									className='rounded-sm p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600'
 								>
-									<Trash className='h-4 w-4 text-muted-foreground text-red-600' />
+									<Trash className='h-4 w-4 text-red-600' />
 								</div>
 							</ConfirmModal>
 						</div>
