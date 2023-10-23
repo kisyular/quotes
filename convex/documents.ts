@@ -395,31 +395,82 @@ export const update = mutation({
 	},
 })
 
+// Define the removeIcon mutation
 export const removeIcon = mutation({
-	args: { id: v.id('documents') },
+	// Define the arguments for the mutation
+	args: { id: v.id('documents') }, // Document ID
+	// Define the handler for the mutation
 	handler: async (ctx, args) => {
+		// Get the user identity
 		const identity = await ctx.auth.getUserIdentity()
 
+		// If the user is not authenticated, throw an error
 		if (!identity) {
 			throw new Error('Unauthenticated')
 		}
 
+		// Get the user ID from the identity
 		const userId = identity.subject
 
+		// Get the existing document from the database
 		const existingDocument = await ctx.db.get(args.id)
 
+		// If the document does not exist, throw an error
 		if (!existingDocument) {
 			throw new Error('Not found')
 		}
 
+		// If the user ID does not match the document's user ID, throw an error
 		if (existingDocument.userId !== userId) {
 			throw new Error('Unauthorized')
 		}
 
+		// Update the document in the database by removing the icon
 		const document = await ctx.db.patch(args.id, {
-			icon: undefined,
+			icon: undefined, // Set the icon to undefined
 		})
 
+		// Return the updated document
+		return document
+	},
+})
+
+// Define the removeCoverImage mutation
+export const removeCoverImage = mutation({
+	// Define the arguments for the mutation
+	args: { id: v.id('documents') }, // Document ID
+	// Define the handler for the mutation
+	handler: async (ctx, args) => {
+		// Get the user identity
+		const identity = await ctx.auth.getUserIdentity()
+
+		// If the user is not authenticated, throw an error
+		if (!identity) {
+			throw new Error('Unauthenticated')
+		}
+
+		// Get the user ID from the identity
+		const userId = identity.subject
+
+		// Get the existing document from the database
+		const existingDocument = await ctx.db.get(args.id)
+
+		// If the document does not exist, throw an error
+		if (!existingDocument) {
+			throw new Error('Not found')
+		}
+
+		// If the user ID does not match the document's user ID, throw an error
+		if (existingDocument.userId !== userId) {
+			throw new Error('Unauthorized')
+		}
+
+		// Update the document in the database by removing the cover image
+		const document = await ctx.db.patch(args.id, {
+			coverImage: undefined, // Set the cover image to undefined
+		})
+
+		// Return the updated document
 		return document
 	},
 })
